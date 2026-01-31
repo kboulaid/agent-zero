@@ -20,10 +20,10 @@ if [ "$BRANCH" = "local" ]; then
 else
     # For other branches, clone from GitHub
     echo "Cloning repository from branch $BRANCH..."
-    git clone -b "$BRANCH" "https://github.com/agent0ai/agent-zero" "/git/agent-zero" || {
-        echo "CRITICAL ERROR: Failed to clone repository. Branch: $BRANCH"
-        exit 1
-    }
+    # git clone -b "$BRANCH" "https://github.com/agent0ai/agent-zero" "/git/agent-zero" || {
+    #     echo "CRITICAL ERROR: Failed to clone repository. Branch: $BRANCH"
+    #     exit 1
+    # }
 fi
 
 . "/ins/setup_venv.sh" "$@"
@@ -35,7 +35,10 @@ fi
 # pip install torch --index-url https://download.pytorch.org/whl/cpu
 
 # Install remaining A0 python packages
-uv pip install -r /git/agent-zero/requirements.txt
+cd /git/agent-zero/
+# Ensure pkg_resources is available for packages with missing build deps
+uv pip install setuptools
+uv pip install --no-build-isolation -r /git/agent-zero/requirements.txt
 # override for packages that have unnecessarily strict dependencies
 uv pip install -r /git/agent-zero/requirements2.txt
 

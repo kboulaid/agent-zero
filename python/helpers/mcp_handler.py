@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import re
+import random
 from typing import (
     List,
     Dict,
@@ -52,6 +53,14 @@ def normalize_name(name: str) -> str:
     # To also replace underscores from non-latin chars, use [^a-zA-Z0-9] with re.UNICODE
     name = re.sub(r"[^\w]", "_", name, flags=re.UNICODE)
     return name
+
+
+def _extract_mcp_message(response: CallToolResult) -> str:
+    return "\n\n".join([item.text for item in response.content if item.type == "text"])
+
+
+def _is_rate_limit_error(message: str) -> bool:
+    return "202 ratelimit" in message.lower()
 
 
 def _determine_server_type(config_dict: dict) -> str:
@@ -115,10 +124,34 @@ class MCPTool(Tool):
             response: CallToolResult = await MCPConfig.get_instance().call_tool(
                 self.name, kwargs
             )
-            message = "\n\n".join(
-                [item.text for item in response.content if item.type == "text"]
-            )
-            if response.isError:
+            message = _extract_mcp_message(response)
+            if (
+                response.isError
+                and self.name == "duckduckgo.search"
+                and _is_rate_limit_error(message)
+            ):
+                await asyncio.sleep(random.uniform(5.0, 10.0))
+                retry_kwargs = dict(kwargs)
+                if "max_results" in retry_kwargs:
+                    try:
+                        retry_kwargs["max_results"] = min(
+                            int(retry_kwargs["max_results"]), 5
+                        )
+                    except (TypeError, ValueError):
+                        retry_kwargs["max_results"] = 5
+                response = await MCPConfig.get_instance().call_tool(
+                    self.name, retry_kwargs
+                )
+                message = _extract_mcp_message(response)
+                if response.isError and _is_rate_limit_error(message):
+                    message = (
+                        "Search temporarily unavailable due to rate limits. "
+                        "Please retry later."
+                    )
+                    error = message
+                elif response.isError:
+                    error = message
+            elif response.isError:
                 error = message
         except Exception as e:
             error = f"MCP Tool Exception: {str(e)}"

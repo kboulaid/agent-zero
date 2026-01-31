@@ -11,7 +11,7 @@ git clone "https://github.com/searxng/searxng" \
 echo "====================SEARXNG2 VENV===================="
 
 # create virtualenv:
-python3.13 -m venv "/usr/local/searxng/searx-pyenv"
+python3 -m venv "/usr/local/searxng/searx-pyenv"
 
 # make it default
 echo ". /usr/local/searxng/searx-pyenv/bin/activate" \
@@ -22,7 +22,7 @@ source "/usr/local/searxng/searx-pyenv/bin/activate"
 
 echo "====================SEARXNG2 INST===================="
 
-# update pip's boilerplate
+# update pip's boilerplate and ensure build deps for editable install
 pip install --no-cache-dir -U pip setuptools wheel pyyaml lxml msgspec typing_extensions
 
 # jump to SearXNG's working tree and install SearXNG into virtualenv

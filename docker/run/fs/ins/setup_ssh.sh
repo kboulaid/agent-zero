@@ -3,5 +3,5 @@ set -e
 
 # Set up SSH
 mkdir -p /var/run/sshd && \
-    # echo 'root:toor' | chpasswd && \
+    echo 'root:toro' | chpasswd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config

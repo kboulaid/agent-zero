@@ -23,7 +23,7 @@ docker build -t agent-zero-main --build-arg BRANCH=main --build-arg CACHE_DATE=$
 
 
 
-# DOCKERHUB PUSH
+# dockerHUB PUSH
 # Run these commands from the /docker/run directory
 
 docker login

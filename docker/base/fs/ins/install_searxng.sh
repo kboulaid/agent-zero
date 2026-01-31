@@ -6,7 +6,7 @@ echo "====================SEARXNG1 START===================="
 # Install necessary packages
 apt-get install -y \
     git build-essential libxslt-dev zlib1g-dev libffi-dev libssl-dev
-#    python3.12-babel uwsgi uwsgi-plugin-python3
+#    python3-babel uwsgi uwsgi-plugin-python3
 
 
 # Add the searxng system user

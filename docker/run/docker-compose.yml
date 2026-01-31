@@ -1,8 +1,16 @@
 services:
   agent-zero:
     container_name: agent-zero
-    image: agent0ai/agent-zero:latest
+    image: agent-zero-local:latest
     volumes:
       - ./agent-zero:/a0
     ports:
       - "50080:80"
+      - "55510:55510"
+    restart: unless-stopped
+    networks:
+      - agent-zero-net
+
+networks:
+  agent-zero-net:
+    driver: bridge
